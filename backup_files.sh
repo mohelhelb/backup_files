@@ -6,14 +6,6 @@
 # set -eux
 
 # --> Script functions
-# Set global archive-related variables
-function set_dir {
-	local arch_dir=$1
-	arch_config_file=${arch_dir}/config_file.txt
-	arch_daily=${arch_dir}/${year}_${month}_${day}
-	arch=${arch_daily}/arch.tar
-	arch_gz="${arch}.gz"
-}
 # Retrieve input from user and write it to ACF
 function input_fls {
 	local arch_config_file=$1
@@ -78,40 +70,35 @@ day=$(date +%d)
 # Create array of valid/invalid files 
 valid_files=()
 invalid_files=()
-# Check script positional arguments
-if [[ -z $1 ]]; then
-	# Case 1
-	# Options: None
-	# Archive Directory: Default (/home/"user"/backup_files)
-	arch_dir=/home/${user}/backup_files
-	# Set up archive directory
-	mkdir -p ${arch_dir}
-	set_dir "${arch_dir}"
-else
-	case $1 in
-		-d)
-			# Case 2
-			# Options: Single (-d)
-			# Archive Directory: User-defined directory
-			arch_dir=$2
+# Set default Archive Directory
+arch_dir="/home/${user}/backup_files"
+# Set user-defined Archive Directory
+while getopts :d: opt
+do
+	case ${opt} in
+		d)
+			arch_dir="${OPTARG}"
 			if [[ -d ${arch_dir} ]] && [[ -w ${arch_dir} ]]; then
-				# Set up archive directory
-				mkdir -p ${arch_dir}
-				set_dir "${arch_dir}"
+				continue
 			else
 				printf "Bad Usage: $0 [-d dir]\nTry: Create dir and/or grant write permission to dir\n"
 				exit
 			fi
 			;;
 		*)
-			# Case 3
-			# Options: Others
-			# Archive Directory: Undefined
 			printf "Bad Usage: $0 [-d dir]\nTry: Invoke valid option along with dir\n"
 			exit
 			;;
 	esac
-fi
+
+done
+# Create Archive Directory
+mkdir -p ${arch_dir}
+# Set archive-related variables
+arch_config_file=${arch_dir}/config_file.txt
+arch_daily=${arch_dir}/${year}_${month}_${day}
+arch=${arch_daily}/arch.tar
+arch_gz="${arch}.gz"
 # Check ACF availability
 if [[ -f ${arch_config_file} ]]; then
 	acf_size=$(stat -c %s ${arch_config_file})
