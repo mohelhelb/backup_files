@@ -81,7 +81,7 @@ invalid_files=()
 # Script filename
 script_filename=$(basename $0)
 # Set default Archive Directory
-arch_dir="/home/${user}/backup_files"
+arch_dir="/home/${user}/backup_files/"
 # Set user-defined Archive Directory
 while getopts :d:h opt
 do
@@ -121,6 +121,7 @@ if [[ -f ${arch_config_file} ]]; then
 		0)
 			# Case 1
 			# ACF exists and is empty
+			printf "Archive Directory: ${arch_dir}\n"
 			printf "Archive Configuration File: Empty\n"
 			read -p "Do you want to populate the archive configuration file? [y/n] " answer
 			case ${answer} in
@@ -151,6 +152,7 @@ if [[ -f ${arch_config_file} ]]; then
 else
 	# Case 3
 	# ACF does not exist
+	printf "Archive Directory: ${arch_dir}\n"
 	printf "Archive Configuration File: Missing\n"
 	read -p "Do you want to create the archive configuration file? [y/n] " answer
 	case ${answer} in
