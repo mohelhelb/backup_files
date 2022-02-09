@@ -1,3 +1,21 @@
 ### Backup Files
 
-This Bash shell script is aimed at backing up the files/directories in the *config_file.txt* file. By default, the parent directory that serves the purpose of containing the directories that, in turn, contain the tarfiles, *backup_files* directory, is created in the user's *home* directory (*/home/"user"/backup_files*). However, it can also be specified by invoking the script along with the appropriate option (*d*). Since the *config_file.txt* file plays a major role in that it contains the user-chosen files/directories to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files/directories and duplicate ones in the *config_file.txt* file are discarded; only the valid files/directories are archived and compressed into a tarfile in a directory within the *backup_files* directory. It's also worth mentioning that running this script generates separate tarfiles provided that it is executed on different dates. Otherwise, the existing tarfile is overwritten by the new created one.
+This bash shell script has the following functionalities:
+
+- Backing up the user-chosen files in the *config_file.txt* file.
+- Discarding the non-existent files and/or duplicate ones in the *config_file.txt* file.
+- Archiving and compressing the valid files to be backed up into a tarfile.
+- Creating the archive directory that serves the purpose of containing the tarfiles in the user's *home* directory (*/home/"user"/backup_files/*), if not specified by the user.
+- Allowing the user to specify the *archive* directory by invoking the script along with the *d* option.
+- Displaying a short description of the script by executing it with the *h* flag.
+
+The steps that should be taken to set up this script are as follows:
+
+- Clone the GitHub repository (preferably into */home/"user"/projects/*).
+```
+[cd ~]
+[mkdir projects/]
+[cd ~/projects/]
+git clone git@github.com:mohelhelb/backup_files.git
+```
+- Modify the *arch_dir* variable (`arch_dir="/home/${user}/backup_files"`) in the *backup_files.sh* script accordingly.
