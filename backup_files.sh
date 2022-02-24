@@ -92,7 +92,7 @@ script_filename=$(basename $0)
 arch_dir="/home/${user}/backup_files/"
 # Set archive-related variables
 set_arch_vars "${arch_dir}"
-while getopts :ad:hD: opt
+while getopts :ad:e::hD: opt
 do
 	case ${opt} in
 		a)
@@ -111,6 +111,10 @@ do
 				printf "Bad Usage: ${script_filename} [-d dir|-h]\nTry: Create dir and/or grant write permission to dir\n"
 				exit
 			fi
+			;;
+		e)
+			sed -i "\$a\\${OPTARG}" "${arch_config_file}" 2> /dev/null
+			exit
 			;;
 		h)
 			# Display help and exit
