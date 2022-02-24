@@ -113,6 +113,7 @@ do
 			fi
 			;;
 		e)
+			# Add entry to ACF
 			sed -i "\$a\\${OPTARG}" "${arch_config_file}" 2> /dev/null
 			exit
 			;;
@@ -122,6 +123,7 @@ do
 			exit
 			;;
 		D)
+			# Remove entry from ACF
 			sed -i "s:^${OPTARG}\$:target: ; /target/d" "${arch_config_file}" 2> /dev/null
 			exit
 			;;
