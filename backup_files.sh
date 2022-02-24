@@ -10,9 +10,14 @@
 function Help {
 	local script_filename=$1
 	printf "\nNAME\n\n${script_filename} - make a backup of files\n\n"
-	printf "SYNOPSIS\n\n${script_filename} [-d dir|-h]\n\n"
-	printf "DESCRIPTION\n\nThis Bash shell script is aimed at backing up the files in the config_file.txt file. By default, the parent directory that serves the purpose of containing the directories that, in turn, contain the tarfiles, backup_files directory, is created in the user's home directory (/home/'user'/backup_files). However, it can also be specified by invoking the script along with the appropriate option (d). Since the config_file.txt file plays a major role in that it contains the user-chosen files to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files and duplicate ones in the config_file.txt file are discarded; only the valid files are archived and compressed into a tarfile in a directory within the backup_files directory. It's also worth mentioning that running this script generates separate tarfiles provided that it is executed on different dates. Otherwise, the existing tarfile is overwritten by the new created one.\n\n"
-	printf "OPTIONS\n\n-d dir\n\tSet user-defined archive directory.\n\n-h \n\tDisplay this help and exit.\n\n"
+	printf "SYNOPSIS\n\n${script_filename} [-a|-d dir|-D file|-e file|-h]\n\n"
+	printf "DESCRIPTION\n\nThis Bash shell script is aimed at backing up the files in the Archive Configuration File (ACF). By default, the parent directory that serves the purpose of containing the directories that, in turn, contain the tarfiles, Archive Directory (AD), is created in the user's home directory (/home/'user'/backup_files/). However, it can also be specified by invoking the script along with the appropriate option (d). Since the ACF plays a major role in that it contains the user-chosen files to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files and duplicate ones in the ACF are discarded; only the valid files are archived and compressed into a tarfile in a directory within the AD. It's also worth mentioning that running this script generates separate tarfiles provided that it is executed on different dates. Otherwise, the existing tarfile is overwritten by the new created one.\n\n"
+	printf "OPTIONS\n\n"
+	echo -e "-a\n\tDisplay all the entries in the ACF and exit.\n"
+	echo -e "-d dir\n\tSet user-defined AD.\n"
+	echo -e "-e file\n\tAppend file to the ACF and exit.\n"
+	echo -e "-D file\n\tRemove file from the ACF and exit.\n"
+	echo -e "-h\n\tDisplay this help and exit.\n"
 }
 # Set archive-related variables
 function set_arch_vars {
@@ -108,10 +113,16 @@ do
 				set_arch_vars "${arch_dir}"
 				continue
 			else
-				printf "Bad Usage: ${script_filename} [-d dir|-h]\nTry: Create dir and/or grant write permission to dir\n"
+				printf "Bad Usage: ${script_filename} [-a|-d dir|-D file|-e file|-h]\nTry: Create dir and/or grant write permission to dir\n"
 				exit
 			fi
 			;;
+		D)
+			# Remove entry from ACF
+			sed -i "s:^${OPTARG}\$:target: ; /target/d" "${arch_config_file}" 2> /dev/null
+			exit
+			;;
+
 		e)
 			# Add entry to ACF
 			sed -i "\$a\\${OPTARG}" "${arch_config_file}" 2> /dev/null
@@ -122,13 +133,8 @@ do
 			Help "${script_filename}"
 			exit
 			;;
-		D)
-			# Remove entry from ACF
-			sed -i "s:^${OPTARG}\$:target: ; /target/d" "${arch_config_file}" 2> /dev/null
-			exit
-			;;
 		*)
-			printf "Bad Usage: ${script_filename} [-d dir|-h]\nTry: Invoke valid option along with dir\n"
+			printf "Bad Usage: ${script_filename} [-a|-d dir|-D file|-e file|-h]\nTry: Invoke valid option along with dir\n"
 			exit
 			;;
 	esac
