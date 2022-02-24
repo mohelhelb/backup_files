@@ -92,7 +92,7 @@ script_filename=$(basename $0)
 arch_dir="/home/${user}/backup_files/"
 # Set archive-related variables
 set_arch_vars "${arch_dir}"
-while getopts :ad:h opt
+while getopts :ad:hD: opt
 do
 	case ${opt} in
 		a)
@@ -115,6 +115,10 @@ do
 		h)
 			# Display help and exit
 			Help "${script_filename}"
+			exit
+			;;
+		D)
+			sed -i "s:^${OPTARG}\$:target: ; /target/d" "${arch_config_file}" 2> /dev/null
 			exit
 			;;
 		*)
