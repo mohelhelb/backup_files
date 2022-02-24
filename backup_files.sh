@@ -92,9 +92,14 @@ script_filename=$(basename $0)
 arch_dir="/home/${user}/backup_files/"
 # Set archive-related variables
 set_arch_vars "${arch_dir}"
-while getopts :d:h opt
+while getopts :ad:h opt
 do
 	case ${opt} in
+		a)
+			# Show entries in the ACF. Suppress empty lines
+			sed -n '/^$/d ; p' "${arch_config_file}" 2> /dev/null
+			exit
+			;;
 		d)
 			if [[ -d ${OPTARG} ]] && [[ -w ${OPTARG} ]]; then
 				# Set user-defined Archive Directory
