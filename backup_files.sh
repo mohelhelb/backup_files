@@ -11,7 +11,7 @@ function Help {
 	local script_filename=$1
 	printf "\nNAME\n\n${script_filename} - make a backup of files\n\n"
 	printf "SYNOPSIS\n\n${script_filename} [-a|-d dir|-D file|-e file|-h]\n\n"
-	printf "DESCRIPTION\n\nThis Bash shell script is aimed at backing up the files in the Archive Configuration File (ACF). By default, the parent directory that serves the purpose of containing the directories that, in turn, contain the tarfiles, Archive Directory (AD), is created in the user's home directory (/home/'user'/backup_files/). However, it can also be specified by invoking the script along with the appropriate option (d). Since the ACF plays a major role in that it contains the user-chosen files to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files and duplicate ones in the ACF are discarded; only the valid files are archived and compressed into a tarfile in a directory within the AD. It's also worth mentioning that running this script generates separate tarfiles provided that it is executed on different dates. Otherwise, the existing tarfile is overwritten by the new created one.\n\n"
+	printf "DESCRIPTION\n\nThis Bash shell script is aimed at backing up the files in the Archive Configuration File (ACF). By default, the directory that serves the purpose of containing the tarfiles, Archive Directory (AD), is created in the user's home directory (/home/'user'/backup_files/). However, it can also be specified by invoking the script along with the appropriate option (d). Since the ACF plays a major role in that it contains the user-chosen files to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files and duplicate ones in the ACF are discarded; only the valid files are archived and compressed into a tarfile in a directory within the AD. It is also worth mentioning that running this script always generates separate tarfiles that do not overwrite one another.\n\n"
 	printf "OPTIONS\n\n"
 	echo -e "-a\n\tDisplay all the entries in the ACF and exit.\n"
 	echo -e "-d dir\n\tSet user-defined AD.\n"
@@ -24,7 +24,7 @@ function set_arch_vars {
 	local arch_dir=$1
 	arch_config_file=${arch_dir}/config_file.txt
 	arch_daily=${arch_dir}/${year}_${month}_${day}
-	arch=${arch_daily}/arch.tar
+	arch=${arch_daily}/arch_${timestamp}.tar
 	arch_gz="${arch}.gz"
 }
 # Retrieve input from user and write it to ACF
@@ -84,10 +84,11 @@ function closure {
 # <-- Script functions
 # Fetch user
 user=$(whoami)
-#
+# Get time-related variables
 year=$(date +%Y)
 month=$(date +%m)
 day=$(date +%d)
+timestamp=$(date +%s)
 # Create array of valid/invalid files 
 valid_files=()
 invalid_files=()
@@ -108,7 +109,7 @@ do
 		d)
 			if [[ -d ${OPTARG} ]] && [[ -w ${OPTARG} ]]; then
 				# Set user-defined Archive Directory
-				arch_dir="${OPTARG}"
+				arch_dir=$(realpath ${OPTARG})
 				# Set archive-related variables
 				set_arch_vars "${arch_dir}"
 				continue
@@ -141,8 +142,7 @@ do
 done
 # Create Archive Directory
 mkdir -p ${arch_dir}
-# Set archive-related variables
-# Check ACF availability
+# Check ACF existence
 if [[ -f ${arch_config_file} ]]; then
 	acf_size=$(stat -c %s ${arch_config_file})
 	case ${acf_size} in
@@ -181,7 +181,7 @@ else
 	# Case 3
 	# ACF does not exist
 	printf "Archive Directory: ${arch_dir}\n"
-	printf "Archive Configuration File: Missing\n"
+	printf "Archive Configuration File: None\n"
 	read -p "Do you want to create the archive configuration file? [y/n] " answer
 	case ${answer} in
 		[yY]|"")
@@ -208,7 +208,7 @@ while read entry
 do
 	# Check if entry is a regular file or directory
 	if [[ -f ${entry} ]] || [[ -d ${entry} ]]; then
-		valid_files+=("${entry}")
+		valid_files+=("$(realpath ${entry})")
 	else
 		invalid_files+=("${entry}")
 	fi	
