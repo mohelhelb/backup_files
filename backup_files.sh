@@ -3,7 +3,7 @@
 # Backup Files
 ##############
 
-# set -eux
+set -eux
 
 # --> Script functions
 # Display help
@@ -13,7 +13,7 @@ function Help {
 	printf "SYNOPSIS\n\n${script_filename} [-a|-d dir|-D file|-e file|-h]\n\n"
 	printf "DESCRIPTION\n\nThis Bash shell script is aimed at backing up the files in the Archive Configuration File (ACF). By default, the directory that serves the purpose of containing the tarfiles, Archive Directory (AD), is created in the user's home directory (/home/'user'/backup_files/). However, it can also be specified by invoking the script along with the appropriate option (d). Since the ACF plays a major role in that it contains the user-chosen files to be backed up, the user is asked to create it, if it does not exist, and/or populate it, if it is empty, at runtime. The non-existent files and duplicate ones in the ACF are discarded; only the valid files are archived and compressed into a tarfile in a directory within the AD. It is also worth mentioning that running this script always generates separate tarfiles that do not overwrite one another.\n\n"
 	printf "OPTIONS\n\n"
-	echo -e "-a\n\tDisplay all the entries in the ACF and exit.\n"
+	echo -e "-a\n\tDisplay all the entries in the ACF other than empty lines and exit.\n"
 	echo -e "-d dir\n\tSet user-defined AD.\n"
 	echo -e "-e file\n\tAppend file to the ACF and exit.\n"
 	echo -e "-D file\n\tRemove file from the ACF and exit.\n"
@@ -102,8 +102,8 @@ while getopts :ad:e::hD: opt
 do
 	case ${opt} in
 		a)
-			# Show entries in the ACF. Suppress empty lines
-			sed -n '/^$/d ; p' "${arch_config_file}" 2> /dev/null
+			# Show all the entries in the ACF other than empty lines and exit
+			sed -n '/^$/d ; p' ${arch_config_file} 2> /dev/null
 			exit
 			;;
 		d)
@@ -119,18 +119,18 @@ do
 			fi
 			;;
 		D)
-			# Remove entry from ACF
+			# Remove entry from ACF and exit
 			sed -i "s:^${OPTARG}\$:target: ; /target/d" "${arch_config_file}" 2> /dev/null
 			exit
 			;;
 
 		e)
-			# Add entry to ACF
+			# Add entry to ACF and exit
 			sed -i "\$a\\${OPTARG}" "${arch_config_file}" 2> /dev/null
 			exit
 			;;
 		h)
-			# Display help and exit
+			# Display help message and exit
 			Help "${script_filename}"
 			exit
 			;;
@@ -212,7 +212,7 @@ do
 	else
 		invalid_files+=("${entry}")
 	fi	
-done < <(sort -u ${arch_config_file})
+done < <(sed "/^$/d ; s:^~/:${HOME}/: ; s:/$::" ${arch_config_file} | sort -u)
 # Ratio
 num_valid_files=${#valid_files[@]}
 num_invalid_files=${#invalid_files[@]}
