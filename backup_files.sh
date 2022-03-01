@@ -59,7 +59,7 @@ function archive_fls {
 	# Archive files
 	for fl in "${fls[@]}"
    	do
-   		tar --append --file ${arch} ${fl} 2> /dev/null
+   		tar --exclude="${arch_daily}" --append --file ${arch} ${fl} 2> /dev/null
    	done
  	# Compress archive file
    	gzip -f ${arch}
