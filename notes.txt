@@ -1,0 +1,7 @@
+### NOTES
+
+# Print five consecutive char (#)
+# > printf "#%.s" {1..5}
+# > #####
+
+
