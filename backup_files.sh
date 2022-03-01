@@ -30,6 +30,7 @@ function set_arch_vars {
 # Retrieve input from user and write it to ACF
 function input_fls {
 	local arch_config_file=$1
+	local fullpath
 	printf "Enter the full path of the files/directories to be backed up:\n"
 	while read -p "> " fullpath
 	do
@@ -43,6 +44,7 @@ function input_fls {
 # Print valid/invalid files
 function print_fls {
 	local fls=("$@")
+	local fl
 	for fl in "${fls[@]}"
 	do
 		printf "%s\n" "${fl}"
@@ -54,6 +56,7 @@ function archive_fls {
 	local arch=$2
 	shift 2
 	local fls=("$@")
+	local fl
 	# Create daily archive directory
  	mkdir -p ${arch_daily}
 	# Archive files
@@ -75,12 +78,6 @@ function closure {
 		exit
 	fi
 }
-#
-# function sep {
-# 	echo
-# 	echo $(printf "#%.0s" {1..50})
-# 	echo
-# }
 # <-- Script functions
 # Fetch user
 user=$(whoami)
