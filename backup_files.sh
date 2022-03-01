@@ -3,7 +3,7 @@
 # Backup Files
 ##############
 
-set -eux
+# set -eux
 
 # --> Script functions
 # Display help
