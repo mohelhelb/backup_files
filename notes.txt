@@ -4,4 +4,4 @@
 # > printf "#%.s" {1..5}
 # > #####
 
-
+# When executing the tar command, the "--exclude" option must precede the "--file" option. When excluding a given directory, its trailing forward slash is to be left off.
