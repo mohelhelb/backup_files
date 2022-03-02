@@ -100,7 +100,23 @@ do
 	case ${opt} in
 		a)
 			# Show all the entries in the ACF other than empty lines and exit
-			sed -n '/^$/d ; p' ${arch_config_file} 2> /dev/null
+			# Case 1
+			# ACF exists and is not empty
+			if [[ -f ${arch_config_file} ]] && [[ -s ${arch_config_file} ]]; then
+				printf "Archive Directory: ${arch_dir}\n"
+				printf "Archive Configuration File:\n"
+				sed -n '/^$/d ; p' ${arch_config_file} 2> /dev/null
+			# Case 2
+			# ACF exists and is empty
+			elif [[ -f ${arch_config_file} ]]; then
+				printf "Archive Directory: ${arch_dir}\n"
+				printf "Archive Configuration File: Empty\n"
+			# Case 3
+			# ACF does not exist
+			else
+				printf "Archive Directory: ${arch_dir}\n"
+				printf "Archive Configuration File: None\n"
+			fi
 			exit
 			;;
 		d)
