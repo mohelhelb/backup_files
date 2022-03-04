@@ -92,7 +92,7 @@ invalid_files=()
 # Script filename
 script_filename=$(basename $0)
 # Set default Archive Directory
-arch_dir="/home/${user}/backup_files/"
+arch_dir="/home/${user}/backup_files"
 # Set archive-related variables
 set_arch_vars "${arch_dir}"
 while getopts :ad:e::hD: opt

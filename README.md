@@ -25,3 +25,7 @@ The steps that should be taken to set up this script are as follows:
 	[sudo chmod a+x ~/projects/backup_files/backup_files.sh]
 	bash ~/projects/backup_files/backup_files.sh
 	```
+- List the AD contents.
+	```
+	ls -l ~/backup_files/*
+	```
